@@ -1,0 +1,7 @@
+L162:         btn.innerHTML = ch.name + "<div class='count'>单选 " + ch.single + " · 多选 " + ch.multiple + " · 判断 " + ch.judge + " · 共 " + total + " 题</div>";
+L256:     var optionsHTML = "";
+L258:         optionsHTML = '<div class="options"><div class="option" data-value="正确">✅ 正确</div><div class="option" data-value="错误">❌ 错误</div></div>';
+L260:         optionsHTML = '<div class="options">';
+L263:             optionsHTML += '<div class="option" data-value="' + o.letter + '">' + o.letter + '. ' + o.text + '</div>';
+L265:         optionsHTML += "</div>";
+L267:     card.innerHTML = '<div class="q-meta"><span class="q-tag "' + tagClass[q.type] + '">' + typeMap[q.type] + '</span><span>' + q.chapter + '</span></div><div class="q-text">' + q.num + '. ' + q.question + '</div>' + optionsHTML + '<div class="feedback" id="feedback"></div>';

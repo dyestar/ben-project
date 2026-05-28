@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商务礼仪 · 跨境电商客户接待模拟</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+
+:root{
+    --ink:#0a0a0b;--ink-rgb:10,10,11;--paper:#f1efea;--paper-rgb:241,239,234;
+    --paper-tint:#e8e5de;--ink-tint:#18181a;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --serif-en:"Playfair Display","Source Serif 4",Georgia,serif;
+    --serif-body-en:"Source Serif 4",Georgia,serif;
+    --serif-zh:"Noto Serif SC",source-han-serif-sc,serif;
+    --sans-zh:"Noto Sans SC",source-han-sans-sc,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);font-family:var(--sans-zh);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+canvas.bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block;transition:opacity 1.2s ease}
+canvas#bg-light{opacity:0}canvas#bg-dark{opacity:1}
+body.light-bg canvas#bg-light{opacity:1}
+body.light-bg canvas#bg-dark{opacity:0}
+body.low-power canvas.bg{display:none!important}
+#deck{position:fixed;inset:0;width:1500vw;height:100vh;display:flex;flex-wrap:nowrap;transition:transform .9s cubic-bezier(.77,0,.175,1);z-index:10;will-change:transform}
+.slide{width:100vw;height:100vh;flex:0 0 100vw;position:relative;padding:6vh 6vw 10vh 6vw;display:flex;flex-direction:column;overflow:hidden}
+.slide.light{color:var(--ink);background:var(--paper)}
+.slide.dark{color:var(--paper);background:var(--ink)}
+.slide::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;transition:background .7s ease}
+.slide.light::before{background:rgba(var(--paper-rgb),.78);backdrop-filter:blur(3px)}
+.slide.dark::before{background:rgba(var(--ink-rgb),.78);backdrop-filter:blur(3px)}
+.slide.hero.light::before{background:rgba(var(--paper-rgb),.16);backdrop-filter:none}
+.slide.hero.dark::before{background:rgba(var(--ink-rgb),.12);backdrop-filter:none}
+.slide.hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none}
+.slide.hero.light::after{background:linear-gradient(180deg,rgba(var(--paper-rgb),.28) 0%,rgba(var(--paper-rgb),0) 14%,rgba(var(--paper-rgb),0) 86%,rgba(var(--paper-rgb),.28) 100%)}
+.slide.hero.dark::after{background:linear-gradient(180deg,rgba(var(--ink-rgb),.32) 0%,rgba(var(--ink-rgb),0) 14%,rgba(var(--ink-rgb),0) 86%,rgba(var(--ink-rgb),.32) 100%)}
+.chrome{display:flex;justify-content:space-between;align-items:flex-start;font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+.chrome .left,.chrome .right{display:flex;gap:2.4em;align-items:center}
+.chrome .sep{width:40px;height:1px;background:currentColor;opacity:.4}
+.foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+.foot .title{font-family:var(--serif-zh);font-weight:400;letter-spacing:.05em;text-transform:none;opacity:.75;font-size:13px}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;padding:6px 14px;border:1px solid currentColor;opacity:.85}
+.rule{width:100%;height:1px;background:currentColor;opacity:.25;margin:3vh 0}
+.h-hero{font-family:var(--serif-zh);font-weight:700;font-size:max(48px,5.8vw);line-height:1.08;letter-spacing:-.01em}
+.h-xl{font-family:var(--serif-zh);font-weight:600;font-size:max(32px,3.6vw);line-height:1.15;letter-spacing:-.005em}
+.h-sub{font-family:var(--serif-en);font-weight:400;font-style:italic;font-size:max(16px,1.4vw);line-height:1.4;opacity:.78}
+.lead{font-family:var(--serif-body-en);font-size:max(16px,1.25vw);line-height:1.65;opacity:.82}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.65}
+.meta-row{display:flex;gap:3vw;align-items:center;font-family:var(--mono);font-size:12px;opacity:.6}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:3vw 4vh;align-items:start}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3vw 4vh;align-items:start}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2.5vw 4vh;align-items:start}
+.icon-card{display:flex;flex-direction:column;gap:1.8vh}
+.icon-card i{opacity:.55;margin-bottom:.5vh}
+.icon-card .card-title{font-family:var(--serif-zh);font-weight:600;font-size:max(16px,1.3vw);line-height:1.3}
+.icon-card .card-desc{font-family:var(--sans-zh);font-size:max(13px,1.05vw);line-height:1.65;opacity:.72}
+.char-card{border-left:3px solid currentColor;padding:2vh 2vw;display:flex;flex-direction:column;gap:.8vh}
+.char-card .char-name{font-family:var(--serif-zh);font-weight:600;font-size:max(18px,1.5vw)}
+.char-card .char-role{font-family:var(--mono);font-size:11px;letter-spacing:.18em;opacity:.6}
+.char-card .char-desc{font-family:var(--sans-zh);font-size:max(13px,1vw);line-height:1.55;opacity:.7;margin-top:.5vh}
+.etiquette-table{width:100%;border-collapse:collapse;font-family:var(--sans-zh);font-size:max(13px,1vw)}
+.etiquette-table th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.55;padding:1.5vh 1vw;border-bottom:1px solid currentColor}
+.etiquette-table td{padding:1.2vh 1vw;border-bottom:1px solid rgba(var(--ink-rgb),.12);line-height:1.5;opacity:.8}
+.act-num{font-family:var(--serif-en);font-size:max(80px,9vw);line-height:1;opacity:.15;position:absolute;top:5vh;right:5vw}
+blockquote.scene-quote{font-family:var(--serif-zh);font-size:max(18px,1.5vw);line-height:1.7;opacity:.78;border-left:2px solid currentColor;padding-left:2.5vw;margin-top:3vh;max-width:75%}
+#nav{position:fixed;bottom:3.5vh;right:3vw;z-index:100;display:flex;gap:10px;align-items:center}
+#nav button{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(var(--ink-rgb),.25);background:rgba(var(--paper-rgb),.7);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;color:var(--ink)}
+#nav button:hover{background:var(--paper);border-color:rgba(var(--ink-rgb),.5)}
+body.dark-bg #nav button{background:rgba(var(--ink-rgb),.7);color:var(--paper);border-color:rgba(var(--paper-rgb),.25)}
+body.dark-bg #nav button:hover{background:var(--ink-tint);border-color:rgba(var(--paper-rgb),.5)}
+#nav .dots{display:flex;gap:8px}
+#nav .dots span{width:8px;height:8px;border-radius:50%;background:rgba(var(--ink-rgb),.2);transition:all .3s;cursor:pointer}
+#nav .dots span.active{background:var(--ink);transform:scale(1.4)}
+body.dark-bg #nav .dots span{background:rgba(var(--paper-rgb),.2)}
+body.dark-bg #nav .dots span.active{background:var(--paper)}
+.table-wrap{overflow:auto;max-height:55vh;margin-top:4vh}
+.nb{font-family:var(--serif-en);font-weight:700;font-size:max(52px,5.5vw);line-height:1;letter-spacing:-.02em}
+.nb-label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;margin-top:.8vh}
+
+</style>
+</head>
+<body>
+<canvas class="bg" id="bg-dark"></canvas>
+<canvas class="bg" id="bg-light"></canvas>
+
+<div id="deck">
+﻿<!-- S01: Hero Cover -->
+<section class="slide hero dark" data-animate="hero">
+  <div class="chrome"><div class="left">商务礼仪 <span class="sep"></span> 内部培训</div><div class="right"><span class="tag">2026</span></div></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <div class="kicker" data-anim>Vol.01 · 客户接待</div>
+    <h1 class="h-hero" style="margin-top:2vh" data-anim>商务礼仪</h1>
+    <p class="h-sub" style="margin-top:2vh" data-anim>跨境电商客户接待模拟</p>
+    <div class="rule" style="margin-top:5vh;width:40%" data-anim></div>
+    <p class="lead" style="margin-top:3vh;max-width:550px" data-anim>从接站的第一声问候<br>到送别后的第一封邮件</p>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>01 / 15</div></div>
+</section>
+
+<!-- S02: 角色介绍 -->
+<section class="slide light">
+  <div class="chrome"><div class="left">Dramatis Personae <span class="sep"></span> 角色介绍</div><div class="right">02 / 15</div></div>
+  <h2 class="h-xl" style="margin-top:4vh" data-anim>出场人物</h2>
+  <div class="rule" data-anim></div>
+  <div class="grid-3" style="margin-top:3vh">
+    <div class="char-card" data-anim><div class="char-role">我方 · 总经理</div><div class="char-name">魏康昊</div><div class="char-desc">主谈人，全程主导接待与商务谈判</div></div>
+    <div class="char-card" data-anim><div class="char-role">我方 · 运营主管</div><div class="char-name">蔡杰聪</div><div class="char-desc">产品演示、数据讲解、技术答疑</div></div>
+    <div class="char-card" data-anim><div class="char-role">我方 · 总经理助理</div><div class="char-name">葛梦阳</div><div class="char-desc">引导接待、会议记录、后勤保障</div></div>
+  </div>
+  <div class="grid-2" style="margin-top:2vh">
+    <div class="char-card" data-anim><div class="char-role">客方 · 创始人</div><div class="char-name">Mr. Smith</div><div class="char-desc">美国亚马逊大卖家创始人，主谈人</div></div>
+    <div class="char-card" data-anim><div class="char-role">客方 · 客户助理</div><div class="char-name">邝裕生 / 万家兴 / 朱梓诺</div><div class="char-desc">协助沟通、翻译、行程对接</div></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>02 / 15</div></div>
+</section>
+
+<!-- S03: Act I Divider -->
+<section class="slide hero light" data-animate="hero">
+  <div class="chrome"><div class="left">Act I <span class="sep"></span> 场景一</div><div class="right">03 / 15</div></div>
+  <div class="act-num">I</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <div class="kicker" data-anim>上午 9:45 · 高铁站</div>
+    <h2 class="h-hero" style="font-size:max(42px,4.8vw)" data-anim>高铁站接站</h2>
+    <blockquote class="scene-quote" data-anim>"G123次列车准点到站。总经理一行已在出站口恭候。"</blockquote>
+    <div class="meta-row" style="margin-top:4vh" data-anim><span>握手 · 接站牌 · 引导 · 车门</span></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>03 / 15</div></div>
+</section>
+
+<!-- S04: 接站四要 -->
+<section class="slide light">
+  <div class="chrome"><div class="left">Etiquette <span class="sep"></span> 接站礼仪</div><div class="right">04 / 15</div></div>
+  <h2 class="h-xl" style="margin-top:4vh" data-anim>接站四要</h2>
+  <div class="rule" data-anim></div>
+  <div class="grid-4" style="margin-top:4vh">
+    <div class="icon-card" data-anim><i data-lucide="handshake" style="width:36px;height:36px"></i><div class="card-title">握手</div><div class="card-desc">虎口相对，力度适中，目视对方约三秒。长者/客户先伸手时再握。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="signpost" style="width:36px;height:36px"></i><div class="card-title">接站牌</div><div class="card-desc">中英双语，字体醒目，手持高度齐胸。提前10分钟到达。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="move-right" style="width:36px;height:36px"></i><div class="card-title">引导</div><div class="card-desc">走客户左前方一至两步，转弯提前示意，台阶提醒脚下。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="car" style="width:36px;height:36px"></i><div class="card-title">开车门</div><div class="card-desc">手掌护住车门上沿防碰头，客户坐稳后轻关车门。</div></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>04 / 15</div></div>
+</section>
+
+<!-- S05: Act II Divider -->
+<section class="slide hero light" data-animate="hero">
+  <div class="chrome"><div class="left">Act II <span class="sep"></span> 场景二</div><div class="right">05 / 15</div></div>
+  <div class="act-num">II</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <div class="kicker" data-anim>公司大厅 · 展厅 · 走廊</div>
+    <h2 class="h-hero" style="font-size:max(42px,4.8vw)" data-anim>公司参观</h2>
+    <blockquote class="scene-quote" data-anim>"根据您店铺的热销品类，我准备了三个系列的样品供您参考。"</blockquote>
+    <div class="meta-row" style="margin-top:4vh" data-anim><span>引路 · 产品展示 · 递样 · 监控大屏</span></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>05 / 15</div></div>
+</section>
+
+<!-- S06: 参观四要 -->
+<section class="slide light">
+  <div class="chrome"><div class="left">Etiquette <span class="sep"></span> 参观礼仪</div><div class="right">06 / 15</div></div>
+  <h2 class="h-xl" style="margin-top:4vh" data-anim>参观四要</h2>
+  <div class="rule" data-anim></div>
+  <div class="grid-4" style="margin-top:4vh">
+    <div class="icon-card" data-anim><i data-lucide="map-pin" style="width:36px;height:36px"></i><div class="card-title">指引手势</div><div class="card-desc">五指并拢、掌心向上，忌用单指指人。转弯提前抬手示意。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="package-open" style="width:36px;height:36px"></i><div class="card-title">递送样品</div><div class="card-desc">双手递出，标签正面朝向客户，附规格说明卡片。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="presentation" style="width:36px;height:36px"></i><div class="card-title">产品讲解</div><div class="card-desc">先致意再开口，数据说话。突出差异化与测试认证。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="monitor" style="width:36px;height:36px"></i><div class="card-title">实力展示</div><div class="card-desc">实时监控大屏，24小时全程录像，质量可追溯。</div></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>06 / 15</div></div>
+</section>
+
+<!-- S07: Act III Divider -->
+<section class="slide hero light" data-animate="hero">
+  <div class="chrome"><div class="left">Act III <span class="sep"></span> 场景三</div><div class="right">07 / 15</div></div>
+  <div class="act-num">III</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <div class="kicker" data-anim>会议室 · 椭圆形长桌</div>
+    <h2 class="h-hero" style="font-size:max(42px,4.8vw)" data-anim>会议室洽谈</h2>
+    <blockquote class="scene-quote" data-anim>"首单按标准条款走，两单之后再谈账期——对双方都是稳妥的做法。"</blockquote>
+    <div class="meta-row" style="margin-top:4vh" data-anim><span>座次 · PPT演示 · 报价 · 记录确认</span></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>07 / 15</div></div>
+</section>
+
+<!-- S08: 座次安排 -->
+<section class="slide light">
+  <div class="chrome"><div class="left">Seating <span class="sep"></span> 座次礼仪</div><div class="right">08 / 15</div></div>
+  <h2 class="h-xl" style="margin-top:4vh" data-anim>座次安排</h2>
+  <div class="rule" data-anim></div>
+  <div style="margin-top:3vh;max-width:650px;margin-inline:auto">
+    <div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr 60px;gap:1.2vw;font-family:var(--sans-zh);font-size:max(13px,1vw);margin-bottom:2vh" data-anim>
+      <div></div><div style="text-align:center;font-family:var(--mono);font-size:10px;opacity:.4">门</div><div></div><div></div><div></div>
+      <div style="text-align:center;padding:1.5vh .5vw;border:1px solid rgba(var(--ink-rgb),.15);font-family:var(--mono);font-size:10px;opacity:.4;grid-row:2/6;display:flex;align-items:center;justify-content:center">门</div>
+      <div style="text-align:center;padding:2vh 1vw;background:rgba(var(--ink-rgb),.05);font-weight:600;grid-column:2/5">主位 · 总经理（面门）</div>
+      <div style="text-align:center;padding:1vh 1vw"></div><div></div><div></div><div></div>
+      <div style="text-align:center;padding:2vh 1vw;background:rgba(var(--ink-rgb),.03);grid-column:2/4">主宾 · Mr.Smith（右为尊）</div>
+      <div style="text-align:center;padding:2vh 1vw;border:1px solid rgba(var(--ink-rgb),.08);grid-column:4/6">客户助理（翻译）</div>
+      <div></div><div></div><div></div><div></div><div></div>
+      <div style="text-align:center;padding:2vh 1vw;border:1px solid rgba(var(--ink-rgb),.08);grid-column:2/4">运营主管</div>
+      <div style="text-align:center;padding:2vh 1vw;border:1px solid rgba(var(--ink-rgb),.08);grid-column:4/6">总经理助理</div>
+    </div>
+    <div class="grid-2" style="margin-top:2vh">
+      <div class="char-card" data-anim><div class="card-title">核心原则</div><div class="card-desc">主位面门，主宾坐主人右手侧（右为尊），翻译坐主宾旁边。客户先入座，主人后入座。</div></div>
+      <div class="char-card" data-anim><div class="card-title">物料准备</div><div class="card-desc">矿泉水、笔记本、签字笔、宣传册提前摆放整齐。PPT首页投好，视频资料就绪。</div></div>
+    </div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>08 / 15</div></div>
+</section>
+
+<!-- S09: 洽谈四要 -->
+<section class="slide light">
+  <div class="chrome"><div class="left">Etiquette <span class="sep"></span> 洽谈礼仪</div><div class="right">09 / 15</div></div>
+  <h2 class="h-xl" style="margin-top:4vh" data-anim>洽谈四要</h2>
+  <div class="rule" data-anim></div>
+  <div class="grid-4" style="margin-top:4vh">
+    <div class="icon-card" data-anim><i data-lucide="list-checks" style="width:36px;height:36px"></i><div class="card-title">会议记录</div><div class="card-desc">讨论结束当场逐条复述要点，双方确认无误。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="percent" style="width:36px;height:36px"></i><div class="card-title">谈判节奏</div><div class="card-desc">首单走标准条款建立信任，后续灵活协商。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="file-text" style="width:36px;height:36px"></i><div class="card-title">方案呈现</div><div class="card-desc">多套方案对比，用数据和工厂实拍视频增强可信度。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="clock" style="width:36px;height:36px"></i><div class="card-title">会后跟进</div><div class="card-desc">要点整理后发给客户确认，明确下一步时间节点。</div></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>09 / 15</div></div>
+</section>
+<!-- S10: Act IV Divider -->
+<section class="slide hero light" data-animate="hero">
+  <div class="chrome"><div class="left">Act IV <span class="sep"></span> 场景四</div><div class="right">10 / 15</div></div>
+  <div class="act-num">IV</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <div class="kicker" data-anim>洽谈结束 · 公司门口</div>
+    <h2 class="h-hero" style="font-size:max(42px,4.8vw)" data-anim>赠送礼品<br>与送别</h2>
+    <blockquote class="scene-quote" data-anim>"这是为您准备的一份小礼物——是未来合作的一个小小纪念。"</blockquote>
+    <div class="meta-row" style="margin-top:4vh" data-anim><span>礼品递送 · 目送 · 车辆驶离</span></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>10 / 15</div></div>
+</section>
+
+<!-- S11: 送别三礼 -->
+<section class="slide light">
+  <div class="chrome"><div class="left">Etiquette <span class="sep"></span> 送别礼仪</div><div class="right">11 / 15</div></div>
+  <h2 class="h-xl" style="margin-top:4vh" data-anim>送别三礼</h2>
+  <div class="rule" data-anim></div>
+  <div class="grid-3" style="margin-top:4vh">
+    <div class="icon-card" data-anim><i data-lucide="gift" style="width:40px;height:40px"></i><div class="card-title">礼品递送</div><div class="card-desc">双手递送，商标正面朝向客户。附简短真诚的说明——"是我们的一点心意"。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="eye" style="width:40px;height:40px"></i><div class="card-title">目送</div><div class="card-desc">车辆启动后站立目送，直至驶离视线方可转身。不可先于客户转身离开。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="hand" style="width:40px;height:40px"></i><div class="card-title">告别姿态</div><div class="card-desc">微微挥手致意，目视车辆方向。"合作愉快"是最得体的告别语。</div></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>11 / 15</div></div>
+</section>
+
+<!-- S12: Act V -->
+<section class="slide light">
+  <div class="chrome"><div class="left">Act V <span class="sep"></span> 场景五</div><div class="right">12 / 15</div></div>
+  <h2 class="h-xl" style="margin-top:4vh" data-anim>第五幕 · 感谢邮件</h2>
+  <div class="rule" data-anim></div>
+  <div style="display:flex;flex-direction:column;align-items:center;margin-top:6vh">
+    <div class="nb" data-anim>60<span style="font-size:0.4em;opacity:.5"> min</span></div>
+    <div class="nb-label" data-anim>客人上车后开始计时</div>
+    <blockquote style="font-family:var(--serif-zh);font-size:max(18px,1.5vw);line-height:1.7;opacity:.78;text-align:center;max-width:600px;margin-top:4vh;border:none" data-anim>"客人上车后开始计时，一个小时内把感谢邮件发出去——分别发给 Mr.Smith 和客户助理，抄送我。"</blockquote>
+    <div class="rule" style="width:50%;margin-top:4vh" data-anim></div>
+    <p class="lead" style="text-align:center;margin-top:2vh" data-anim>收件人：Mr.Smith + 客户助理 | 抄送：总经理</p>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>12 / 15</div></div>
+</section>
+
+<!-- S13: 邮件三要 -->
+<section class="slide light">
+  <div class="chrome"><div class="left">Etiquette <span class="sep"></span> 邮件礼仪</div><div class="right">13 / 15</div></div>
+  <h2 class="h-xl" style="margin-top:4vh" data-anim>邮件三要</h2>
+  <div class="rule" data-anim></div>
+  <div class="grid-3" style="margin-top:4vh">
+    <div class="icon-card" data-anim><i data-lucide="timer" style="width:40px;height:40px"></i><div class="card-title">黄金一小时</div><div class="card-desc">客人上车后一小时内发出感谢邮件。趁热打铁，体现效率与诚意。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="mail" style="width:40px;height:40px"></i><div class="card-title">双收件人</div><div class="card-desc">主客户 + 客户助理各发一份，抄送己方领导。不可遗漏任何一方。</div></div>
+    <div class="icon-card" data-anim><i data-lucide="pen-line" style="width:40px;height:40px"></i><div class="card-title">内容框架</div><div class="card-desc">感谢来访 → 回顾共识 → 下一步计划 → 保持联系。简洁温暖，专业得体。</div></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>13 / 15</div></div>
+</section>
+
+<!-- S14: 速查表 -->
+<section class="slide light">
+  <div class="chrome"><div class="left">Quick Reference <span class="sep"></span> 速查表</div><div class="right">14 / 15</div></div>
+  <h2 class="h-xl" style="margin-top:3vh" data-anim>礼仪细节速查表</h2>
+  <div class="rule" data-anim></div>
+  <div class="table-wrap" data-anim>
+    <table class="etiquette-table">
+      <thead><tr><th style="width:12%">环节</th><th style="width:35%">关键细节</th><th style="width:53%">要点说明</th></tr></thead>
+      <tbody>
+        <tr><td>握手</td><td>虎口相对，力度适中，目视约三秒</td><td>长者/客户先伸手时再握，不可抢先</td></tr>
+        <tr><td>接站牌</td><td>中英双语，手持高度齐胸</td><td>字体醒目，提前10分钟到达等候</td></tr>
+        <tr><td>接行李</td><td>双手接过，轻拿轻放</td><td>不翻动、不拉开客户箱包</td></tr>
+        <tr><td>引导行走</td><td>走客户左前方一至两步</td><td>转弯提前示意，台阶提醒"注意脚下"</td></tr>
+        <tr><td>拉车门</td><td>手掌护住车门上沿防碰头</td><td>等客户坐稳后轻关车门</td></tr>
+        <tr><td>指引手势</td><td>五指并拢、掌心向上</td><td>忌用单指指人或指方向</td></tr>
+        <tr><td>递送物品</td><td>双手递出，商标朝向对方</td><td>样品附规格说明卡片</td></tr>
+        <tr><td>座次安排</td><td>主位面门，主宾坐右侧</td><td>右为尊，翻译坐主宾旁边</td></tr>
+        <tr><td>会议记录</td><td>讨论结束当场复述要点</td><td>逐条确认，双方确认无误</td></tr>
+        <tr><td>赠送礼品</td><td>双手递送，商标朝向客户</td><td>附简短真诚的说明</td></tr>
+        <tr><td>目送</td><td>车辆驶离视线后方可转身</td><td>不可先于客户转身离开</td></tr>
+        <tr><td>感谢邮件</td><td>一小时内发出</td><td>主客户+助理各一份，抄送己方领导</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>14 / 15</div></div>
+</section>
+
+<!-- S15: End Quote -->
+<section class="slide hero dark" data-animate="quote">
+  <div class="chrome"><div class="left">Fin <span class="sep"></span> 全剧终</div><div class="right">15 / 15</div></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+    <div class="rule" style="width:80px;margin-bottom:5vh" data-anim></div>
+    <blockquote style="font-family:var(--serif-zh);font-size:max(22px,2.2vw);line-height:1.65;max-width:650px;opacity:.88" data-anim="line">"从接站的第一声问候，到送别后的第一封邮件——每一个细节，都是专业与诚意的体现。"</blockquote>
+    <div class="rule" style="width:80px;margin-top:5vh" data-anim></div>
+    <p style="font-family:var(--serif-zh);font-size:max(18px,1.6vw);margin-top:4vh;opacity:.65" data-anim="line">商务接待不只是流程</p>
+    <p style="font-family:var(--serif-zh);font-size:max(20px,1.8vw);opacity:.82" data-anim="line">更是一家公司递给世界的第一张名片</p>
+    <div class="meta-row" style="margin-top:6vh;justify-content:center" data-anim><span>全剧终</span></div>
+  </div>
+  <div class="foot"><div class="title">商务礼仪培训</div><div>Fin</div></div>
+</section>
+
+</div>
+
+<div id="nav">
+  <button id="nav-prev" aria-label="Previous"><i data-lucide="chevron-left" style="width:18px;height:18px"></i></button>
+  <div class="dots" id="nav-dots"></div>
+  <button id="nav-next" aria-label="Next"><i data-lucide="chevron-right" style="width:18px;height:18px"></i></button>
+</div>
+
+<script>
+const bgFrag=
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform vec3 u_ink;
+uniform vec3 u_paper;
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_resolution.xy;
+  float t=u_time*.15;
+  float n=sin(uv.x*2.8+t)*cos(uv.y*2.3-t*.7)*.5+.5;
+  n+=sin(uv.x*5.5-t*.4)*cos(uv.y*4.8+t*.3)*.3;
+  n+=sin((uv.x+uv.y)*3.2+t*.6)*.2;
+  n=n*.5+.25;
+  vec3 col=mix(u_ink,u_paper,n*.35);
+  col+=vec3(.02,.01,.03)*sin(uv.y*40.+t);
+  gl_FragColor=vec4(col,1.);
+};
+function createBG(id,ink,paper){
+  const c=document.getElementById(id);
+  if(!c)return;
+  const gl=c.getContext('webgl')||c.getContext('experimental-webgl');
+  if(!gl)return;
+  const vs=gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vs,'attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}');
+  gl.compileShader(vs);
+  const fs=gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fs,bgFrag);
+  gl.compileShader(fs);
+  const prog=gl.createProgram();
+  gl.attachShader(prog,vs);gl.attachShader(prog,fs);
+  gl.linkProgram(prog);gl.useProgram(prog);
+  const buf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const pLoc=gl.getAttribLocation(prog,'p');
+  gl.enableVertexAttribArray(pLoc);
+  gl.vertexAttribPointer(pLoc,2,gl.FLOAT,false,0,0);
+  const uRes=gl.getUniformLocation(prog,'u_resolution');
+  const uTime=gl.getUniformLocation(prog,'u_time');
+  const uInk=gl.getUniformLocation(prog,'u_ink');
+  const uPaper=gl.getUniformLocation(prog,'u_paper');
+  function render(t){
+    gl.uniform2f(uRes,c.width,c.height);
+    gl.uniform1f(uTime,t*.001);
+    gl.uniform3f(uInk,ink[0],ink[1],ink[2]);
+    gl.uniform3f(uPaper,paper[0],paper[1],paper[2]);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+}
+createBG('bg-dark',[.039,.039,.043],[.945,.937,.918]);
+createBG('bg-light',[.039,.039,.043],[.945,.937,.918]);
+</script>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const totalSlides=slides.length;
+const deck=document.getElementById('deck');
+let idx=0;
+const dotsEl=document.getElementById('nav-dots');
+for(let i=0;i<totalSlides;i++){
+  const d=document.createElement('span');
+  if(i===0)d.className='active';
+  d.addEventListener('click',()=>go(i));
+  dotsEl.appendChild(d);
+}
+function go(i){
+  if(i<0||i>=totalSlides)return;
+  idx=i;
+  deck.style.transform='translateX(-'+idx*100+'vw)';
+  const isDark=slides[idx].classList.contains('dark');
+  document.body.classList.toggle('dark-bg',isDark);
+  document.body.classList.toggle('light-bg',!isDark);
+  dotsEl.querySelectorAll('span').forEach((d,j)=>d.classList.toggle('active',j===idx));
+  if(window.__playSlide)window.__playSlide(idx);
+}
+document.getElementById('nav-prev').addEventListener('click',()=>go(idx-1));
+document.getElementById('nav-next').addEventListener('click',()=>go(idx+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();if(window.__pipeAdvance&&window.__pipeAdvance())return;go(idx+1)}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(idx-1)}
+  if(e.key==='Home'){e.preventDefault();go(0)}
+  if(e.key==='End'){e.preventDefault();go(totalSlides-1)}
+});
+document.addEventListener('wheel',e=>{
+  if(Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
+  if(e.deltaY>30){if(window.__pipeAdvance&&window.__pipeAdvance())return;go(idx+1)}
+  if(e.deltaY<-30)go(idx-1);
+},{passive:true});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50){if(dx<0){if(window.__pipeAdvance&&window.__pipeAdvance())return;go(idx+1)}else go(idx-1)}
+},{passive:true});
+go(0);
+</script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+<script type="module">
+let motion;
+try {
+  motion = await import('https://cdn.jsdelivr.net/npm/motion@11.11.17/+esm');
+} catch(e2) {
+  console.warn('[motion] CDN failed, disabling animations');
+  document.querySelectorAll('[data-anim]').forEach(el=>{el.style.opacity='1';el.style.transform='none'});
+}
+if(motion){
+  const { animate, stagger } = motion;
+  document.body.classList.add('motion-ready');
+  const EASE = [.22, 1, .36, 1];
+  const slidesAll = [...document.querySelectorAll('.slide')];
+  let pipeStep = -1;
+  let lastIdx = -1;
+
+  function resetAnims(slide){
+    slide.querySelectorAll('[data-anim]').forEach(el=>{
+      el.style.opacity='';
+      el.style.transform='';
+    });
+  }
+
+  function revealStatic(slide){
+    resetAnims(slide);
+    document.getAnimations?.().forEach(a=>a.cancel());
+    slide.querySelectorAll('[data-anim]').forEach(el=>{
+      el.style.opacity='1';
+      el.style.transform='none';
+    });
+  }
+
+  function playSlide(i){
+    const slide = slidesAll[i];
+    if(!slide) return;
+    lastIdx = i;
+    const recipe = slide.dataset.animate || (slide.classList.contains('hero') ? 'hero' : 'cascade');
+
+    if(window.__lowPowerMode){
+      revealStatic(slide);
+      return;
+    }
+
+    resetAnims(slide);
+    const all = [...slide.querySelectorAll('[data-anim]')];
+    if(!all.length) return;
+
+    if(recipe === 'quote'){
+      const lines = all.filter(el=>el.dataset.anim==='line');
+      const others = all.filter(el=>el.dataset.anim!=='line');
+      if(others.length) animate(others, {opacity:[0,1], y:[8,0]}, {duration:.6, delay:stagger(.12, {start:.2}), easing:EASE});
+      if(lines.length)  animate(lines,  {opacity:[.35,1], y:[10,0]}, {duration:.8, delay:stagger(.55, {start:.5}), easing:EASE});
+      return;
+    }
+
+    if(recipe === 'hero'){
+      animate(all, {opacity:[0,1], y:[14,0]}, {duration:.9, delay:stagger(.16, {start:.2}), easing:EASE});
+      return;
+    }
+
+    animate(all, {opacity:[0,1], y:[16,0]}, {duration:.75, delay:stagger(.1, {start:.15}), easing:EASE});
+  }
+
+  function pipeAdvance(){
+    if(window.__lowPowerMode) return false;
+    const slide = slidesAll[lastIdx];
+    if(!slide || slide.dataset.animate !== 'pipeline') return false;
+    const steps  = [...slide.querySelectorAll('[data-anim="step"]')];
+    const arrows = [...slide.querySelectorAll('[data-anim="arrow"]')];
+    if(pipeStep >= steps.length - 1) return false;
+    pipeStep++;
+    animate(steps[pipeStep], {opacity:[0.15,1], y:[8,0]}, {duration:.5, easing:EASE});
+    if(pipeStep > 0 && arrows[pipeStep-1]){
+      animate(arrows[pipeStep-1], {opacity:[0.15,.7]}, {duration:.3, delay:.15});
+    }
+    return true;
+  }
+
+  window.__playSlide = playSlide;
+  window.__pipeAdvance = pipeAdvance;
+  playSlide(0);
+}
+</script>
+</body>
+</html>

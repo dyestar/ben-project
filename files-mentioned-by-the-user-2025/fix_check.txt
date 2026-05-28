@@ -1,0 +1,7 @@
+162:         btn.innerHTML = ch.name + "<div class='count'>单选 " + ch.single + " · 多选 " + ch.multiple + " · 判断 " + ch.judge + " · 共 " + total + " 题</div>";
+258:         optionsHTML = "<div class='options'><div class='option" data-value='正确'>✅ 正确</div><div class='option" data-value='错误'>❌ 错误</div></div>";
+263:             optionsHTML += "<div class='option" data-value='" + o.letter + "'>" + o.letter + ". " + o.text + "</div>";
+267:     card.innerHTML = "<div class='q-meta'><span class='q-tag " + tagClass[q.type] + "'>" + typeMap[q.type] + "</span><span>" + q.chapter + "</span></div><div class='q-text'>" + q.num + ". " + q.question + "</div>" + optionsHTML + "<div class='feedback" id='feedback'></div>";
+341:         feedback.innerHTML = "❌ 回答错误<div class='answer-text'>正确答案：" + q.answer + "</div>";
+425:         list.innerHTML = "<div class='empty-state" style='padding:60px 20px;text-align:center;color:#999;'><div style='font-size:48px;margin-bottom:16px;'>🎉</div><div>还没有错题，继续保持！</div></div>";
+436:         div.innerHTML = "<div class='wi-q'><strong>" + (i+1) + ".</strong> [" + typeMap[q.type] + "] " + q.question + "</div><div class='wi-answer'><span class='wrong-a'>你的答案：" + displayAns + "</span> · <span class='correct-a'>正确答案：" + q.answer + "</span></div>";
